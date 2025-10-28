@@ -1,13 +1,15 @@
 import sqlite3
 import re 
 import random
-import hashlib
 import getpass
 import bcrypt
 import datetime
 
-conn = sqlite3.connect("users.db")
-cursor = conn.cursor()
+
+DB_NAME = "bank.db"
+
+with sqlite3.connect(DB_NAME) as conn:
+    cursor = conn.cursor()
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS users (
@@ -58,17 +60,24 @@ def validate_password (password):
 # created_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     
-def hash_password(password):
-    return hashlib.sha256(password.encode()).hexdigest()
+def hash_password(password: str) -> bytes:
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(password.encode('utf-8'), salt)
+
+def verify_password(password: str, hashed: bytes) -> bool:
+    return bcrypt.checkpw(password.encode('utf-8'), hashed)
+
+
 
 def generate_account_number():
     while True:
         acct_num = str(random.randint(10000000, 99999999))
-        with sqlite3.connect("bank.db") as conn:
+        with sqlite3.connect(DB_NAME) as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT * FROM acct WHERE account_number = ?", (acct_num,))
+            cursor.execute("SELECT * FROM users WHERE account_number = ?", (acct_num,))
             if not cursor.fetchone():
                 return acct_num
+
     
 def initial_depo(initial_deposit):
     try:
