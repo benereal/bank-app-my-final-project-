@@ -456,7 +456,7 @@ def logged_in_menu(user_id):
         else:
             print("Invalid choice.")
 
-
+if __name__ == "__main__":
     main_menu()
 
 
