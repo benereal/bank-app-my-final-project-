@@ -8,7 +8,7 @@ import time
 
 DB_NAME = "bank.db"
 
-# Update users table to include balance
+# make the tables users and transactions
 with sqlite3.connect(DB_NAME) as conn:
     cursor = conn.cursor()
     cursor.execute("""
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS transactions (
                """)
 conn.commit()
 
-
+# my validation functions
 
 def validate_full_name(full_name):
     return full_name.replace(' ', '').isalpha() and 4 <= len(full_name.replace(' ', '')) <= 255
@@ -456,7 +456,7 @@ def logged_in_menu(user_id):
         else:
             print("Invalid choice.")
 
-if __name__ == "__main__":
+
     main_menu()
 
 
