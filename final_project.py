@@ -88,6 +88,7 @@ def initial_depo(initial_deposit):
             return False
     except ValueError:
         print("Enter a number")
+    
         
 def validate_email(email):
     pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
@@ -159,6 +160,7 @@ def register_user():
             continue
         break
 
+
     # Initial deposit
     while True:
         initial_deposit_str = input("Initial Deposit amount (min ₦2000): ").strip()
@@ -179,10 +181,11 @@ def register_user():
 
     try:
         cursor.execute("""
-            INSERT INTO users (username, email, fullname, password_hash, account_number, created_at)
-            VALUES (?, ?, ?, ?, ?, ?)
-        """, (username, email, full_name, hashed_pw, account_num, created_at))
+        INSERT INTO users (username, email, fullname, password_hash, account_number, balance, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (username, email, full_name, hashed_pw, account_num, initial_deposit, created_at))
         conn.commit()
+
         user_id = cursor.lastrowid
 
         # Record initial deposit as a transaction
@@ -191,12 +194,12 @@ def register_user():
             VALUES (?, ?, ?, ?)
         """, (user_id, "deposit", initial_deposit, created_at))
         conn.commit()
-
+        # remember to automatically enter logged-in menu hereeee
         print(f"Registration successful. Account number: {account_num}")
         time.sleep(1)
         print("Logging you in...")
         time.sleep(1)
-        logged_in_menu(user_id)   # automatically enter logged-in menu
+        logged_in_menu(user_id)   
         return
     except sqlite3.IntegrityError as e:
         print("Database error:", e)
